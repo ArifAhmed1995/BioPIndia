@@ -7,15 +7,16 @@ from post_process import *
 #from distutils.core import setup
 #from Cython.Distutils import build_ext
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def display_stl_external(stl_path):
-    fstl = os.path.dirname(os.path.abspath(__file__)) + "/fstl/build/fstl " +\
-                stl_path
+    fstl = CURRENT_DIR + "/fstl/build/fstl " + stl_path
     subprocess.check_call(fstl, stdout=subprocess.PIPE, shell=True)
 
 def generate_gcode(stl_path):
-    generate_command = "slic3r " + stl_path + " --output output.gcode"
+    generate_command = "perl "+ CURRENT_DIR + "/slic3r/slic3r.pl " + stl_path + " --output output.gcode"
     subprocess.check_call(generate_command, stdout=subprocess.PIPE, shell=True)
-    return os.path.dirname(os.path.abspath(__file__)) + "/output.gcode"
+    return CURRENT_DIR + "/output.gcode"
 
 class BiopIndia(BaseWidget):
     def __init__(self):
