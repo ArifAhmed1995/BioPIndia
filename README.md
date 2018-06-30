@@ -9,6 +9,8 @@ Run `git clone https://github.com/ArifAhmed1995/BioPIndia` on a terminal.
 
 - `Qt5` for `fstl`
 - `PyForms` for main GUI
+- `pyserial` for sensor communication
+- `matplotlib` for plotting
 
 ### Building fstl
 

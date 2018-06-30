@@ -1,3 +1,11 @@
+import os
+import re
+import threading as thr
+import serial as srl
+import time
+
+import numpy as np
+
 from pyforms 			import BaseWidget
 from pyforms.controls 	import ControlBoundingSlider
 from pyforms.controls 	import ControlText
@@ -21,3 +29,8 @@ from pyforms.controls 	import ControlEventTimeline
 from pyforms.controls 	import ControlCodeEditor
 
 import pyforms
+
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+from PyQt5.QtGui import QIcon
+
+import matplotlib.pyplot as plt
