@@ -35,6 +35,8 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
         self.humidity_yar = [0]
         self.smoke_conc = [0]
         self.time_ar = [0]
+        
+        self.abc = 0
 
         self.current_temp_1 = 0
         self.current_temp_2 = 0
@@ -113,10 +115,15 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
         mySrc.data_signal.connect(addData_callbackFunc)
 
         while(True):
-            if self.sensors_port != self.sensors_sensor.get_port():
+            if self.sensors_port != self.sensors.get_port():
                 break
+            self.current_temp_1 = self.sensors.get_data()[1].decode("utf-8")
+            self.current_temp_2 = self.sensors.get_data()[2].decode("utf-8")
+            self.current_hum_1 = self.sensors.get_data()[3].decode("utf-8")
+            self.current_hum_2 = self.sensors.get_data()[4].decode("utf-8")
+            self.current_smoke_concentration = self.sensors.get_data()[0].decode("utf-8")
             time.sleep(2)
-            mySrc.data_signal.emit(self.sensors_sensor.get_data()) # <- Here you emit a signal!
+            mySrc.data_signal.emit(self.sensors.get_data()) # <- Here you emit a signal!
 
 if __name__ == "__main__":
     import sys

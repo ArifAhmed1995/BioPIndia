@@ -8,7 +8,7 @@ from biopindia import Ui_BioPIndia
 from serial import SerialException
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QLCDNumber, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QApplication, QLCDNumber, QMessageBox, QFileDialog, QGridLayout
 
 
 from matplotlibwidget import SensorsMatplotlibQWidget
@@ -27,6 +27,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.actionExit.triggered.connect(self.exit)
 
         # Live Plot for sensors
+        self.gridLayout = QGridLayout()
         self.sensors_plot_widget = SensorsMatplotlibQWidget()
         self.addSensorsMatplotlibQWidget(self.sensors_plot_widget)
 
@@ -37,11 +38,11 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         palette_temp_2 = self.temp_2_lcd.palette()
         palette_smoke_conc = self.smoke_conc_lcd.palette()
 
-        palette_humidity_1.setColor(palette_humidity.Light, QtGui.QColor(0, 95, 255))
-        palette_humidity_2.setColor(palette_humidity.Light, QtGui.QColor(0, 95, 255))
-        palette_temp_1.setColor(palette_temp.Light, QtGui.QColor(93, 95, 25))
-        palette_temp_2.setColor(palette_temp.Light, QtGui.QColor(93, 95, 25))
-        palette_smoke_conc.setColor(palette_temp.Light, QtGui.QColor(3, 195, 125))
+        palette_humidity_1.setColor(palette_humidity_1.Light, QtGui.QColor(0, 95, 255))
+        palette_humidity_2.setColor(palette_humidity_2.Light, QtGui.QColor(0, 95, 255))
+        palette_temp_1.setColor(palette_temp_1.Light, QtGui.QColor(93, 95, 25))
+        palette_temp_2.setColor(palette_temp_2.Light, QtGui.QColor(93, 95, 25))
+        palette_smoke_conc.setColor(palette_smoke_conc.Light, QtGui.QColor(3, 195, 125))
 
         self.humidity_1_lcd.setPalette(palette_humidity_1)
         self.humidity_2_lcd.setPalette(palette_humidity_2)
@@ -52,6 +53,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         lcd_thread = threading.Thread(name = 'LCD_Thread',
                     target = self.update_sensor_lcds, daemon = True)
         lcd_thread.start()
+
 
         # Webcam Widget Integration
         self.webcam_widget = WebcamQWidget()
