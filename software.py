@@ -1,18 +1,47 @@
 import os
 import sys
 import subprocess
+
 import threading
+
+from threading import Timer
 
 from biopindia import Ui_BioPIndia
 
 from serial import SerialException
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QLCDNumber, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QLCDNumber, QApplication, QMessageBox, QFileDialog
 
 
 from matplotlibwidget import SensorsMatplotlibQWidget
 from webcam import *
+
+
+class LCDTimer(object):
+    def __init__(self, interval, function, *args, **kwargs):
+        self._timer     = None
+        self.interval   = interval
+        self.function   = function
+        self.args       = args
+        self.kwargs     = kwargs
+        self.is_running = False
+        self.start()
+
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.function(*self.args, **self.kwargs)
+
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
 
 class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
     def __init__(self):
@@ -37,11 +66,11 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         palette_temp_2 = self.temp_2_lcd.palette()
         palette_smoke_conc = self.smoke_conc_lcd.palette()
 
-        palette_humidity_1.setColor(palette_humidity.Light, QtGui.QColor(0, 95, 255))
-        palette_humidity_2.setColor(palette_humidity.Light, QtGui.QColor(0, 95, 255))
-        palette_temp_1.setColor(palette_temp.Light, QtGui.QColor(93, 95, 25))
-        palette_temp_2.setColor(palette_temp.Light, QtGui.QColor(93, 95, 25))
-        palette_smoke_conc.setColor(palette_temp.Light, QtGui.QColor(3, 195, 125))
+        palette_humidity_1.setColor(palette_humidity_1.Light, QtGui.QColor(0, 95, 255))
+        palette_humidity_2.setColor(palette_humidity_2.Light, QtGui.QColor(0, 95, 255))
+        palette_temp_1.setColor(palette_temp_1.Light, QtGui.QColor(93, 95, 25))
+        palette_temp_2.setColor(palette_temp_2.Light, QtGui.QColor(93, 95, 25))
+        palette_smoke_conc.setColor(palette_smoke_conc.Light, QtGui.QColor(3, 195, 125))
 
         self.humidity_1_lcd.setPalette(palette_humidity_1)
         self.humidity_2_lcd.setPalette(palette_humidity_2)
@@ -49,9 +78,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.temp_2_lcd.setPalette(palette_temp_2)
         self.smoke_conc_lcd.setPalette(palette_smoke_conc)
 
-        lcd_thread = threading.Thread(name = 'LCD_Thread',
-                    target = self.update_sensor_lcds, daemon = True)
-        lcd_thread.start()
+        lcd_thread = LCDTimer(1 , self.update_sensor_lcds)
 
         # Webcam Widget Integration
         self.webcam_widget = WebcamQWidget()
@@ -68,7 +95,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.actionLoad_STL_File.triggered.connect(self.load_stl_file)
 
     def addSensorsMatplotlibQWidget(self, sensors_plot_widget):
-        self.gridLayout.addWidget(sensors_plot_widget, *(0,1))
+        self.sensor_plot_grid.addWidget(sensors_plot_widget, *(0,1))
 
         self.sensors_plot_thread = threading.Thread(name = 'Sensors_Plot_Thread',
                     target = sensors_plot_widget.dataSendLoop,
@@ -76,12 +103,11 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.sensors_plot_thread.start()
 
     def update_sensor_lcds(self):
-        while(True):
-            self.humidity_1_lcd.display(self.sensors_plot_widget.current_hum_1)
-            self.humidity_2_lcd.display(self.sensors_plot_widget.current_hum_2)
-            self.temp_1_lcd.display(self.sensors_plot_widget.current_temp_1)
-            self.temp_2_lcd.display(self.sensors_plot_widget.current_temp_2)
-            self.smoke_conc_lcd.display(self.sensors_plot_widget.current_smoke_concentration)
+        self.humidity_1_lcd.display(self.sensors_plot_widget.current_hum_1)
+        self.humidity_2_lcd.display(self.sensors_plot_widget.current_hum_2)
+        self.temp_1_lcd.display(self.sensors_plot_widget.current_temp_1)
+        self.temp_2_lcd.display(self.sensors_plot_widget.current_temp_2)
+        self.smoke_conc_lcd.display(self.sensors_plot_widget.current_smoke_concentration)
 
     def stl_found(self):
         if self.stl_file is None:

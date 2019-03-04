@@ -26,7 +26,7 @@ class Communicate(QtCore.QObject):
 class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
     def __init__(self, input_port="/dev/ttyACM0"):
         self.n = np.linspace(0, 1, 1)
-
+        self.abc = 1
         self.sensors_port = input_port
         self.sensors = Sensors(port=input_port)
         self.sensors.flush()
@@ -75,10 +75,17 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
 
     def addData(self, value):
         self.time_ar.append(self.time_ar[-1] + 2)
-        gas_concentration, temp1, temp2, max_temp, hum1, hum2 = value
-        self.temp_yar.append((float(temp1) + float(temp1))/2)
-        self.humidity_yar.append((float(hum1) + float(hum2))/2)
-        self.smoke_conc.append(float(gas_concentration))
+        self.current_smoke_concentration, self.current_temp_1, self.current_temp_2, max_temp, self.current_hum_1, self.current_hum_2 = value
+        self.current_smoke_concentration = float(self.current_smoke_concentration)
+        self.current_temp_1 = float(self.current_temp_1)
+        self.current_temp_2 = float(self.current_temp_2)
+        max_temp = float(max_temp)
+        self.current_hum_1 = float(self.current_hum_1)
+        self.current_hum_2 = float(self.current_hum_2)
+
+        self.temp_yar.append((self.current_temp_1 + float(self.current_temp_2))/2)
+        self.humidity_yar.append((self.current_hum_1 + self.current_hum_2)/2)
+        self.smoke_conc.append(self.current_smoke_concentration)
 
     def addData_callbackFunc(self, value):
         self.addData(value)
@@ -86,7 +93,7 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
     def _step(self, *args):
         try:
             TimedAnimation._step(self, *args)
-        except Exception as e:
+        except Exception:
             self.abc += 1
             print(str(self.abc))
             TimedAnimation._stop(self)
@@ -99,7 +106,7 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
         time_max = time_min + 11
         self.temp_ax.set_xlim(time_min, time_max)
         self.humidity_ax.set_xlim(time_min, time_max)
-    
+
         self.temp_ax.set_xticks(np.arange(time_min, time_max, 2))
         self.humidity_ax.set_xticks(np.arange(time_min, time_max, 2))
         if(len(self.time_ar) > 13):
@@ -113,13 +120,8 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
         mySrc.data_signal.connect(addData_callbackFunc)
 
         while(True):
-            if self.sensors_port != self.sensors_sensor.get_port():
+            if self.sensors_port != self.sensors.get_port():
                 break
             time.sleep(2)
-            mySrc.data_signal.emit(self.sensors_sensor.get_data()) # <- Here you emit a signal!
+            mySrc.data_signal.emit(self.sensors.get_data()) # <- Here you emit a signal!
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    myGUI = CustomMainWindow()
-    sys.exit(app.exec_())
