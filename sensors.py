@@ -6,11 +6,11 @@ import time
 
 import numpy as np
 
-from serial.tools import list_ports
+from port_methods import get_arduino_port
 
 class Sensors:
-    def __init__(self, port="/dev/ttyACM0", baudrate = 9600):
-        self.port = port
+    def __init__(self, baudrate = 9600):
+        self.port = get_arduino_port()
         self.baudrate = baudrate
 
         self.sensors = serial.Serial(self.port, baudrate=self.baudrate,
@@ -41,7 +41,7 @@ class Sensors:
         while(self.sensors.inWaiting()==0):
             pass
         return self.sensors.readline().split()
-    
+
     def get_temp_limits(self):
         return 20, 70
 
@@ -50,10 +50,10 @@ class Sensors:
 
     def get_gas_conc_limits(self):
         return 0, 200
-    
+
     def plot_data(self, figure):
         self.flush()
-        
+
         temp_low, temp_high = self.get_temp_limits()
         humidity_low, humidity_high = self.get_humidity_limits()
 
@@ -63,7 +63,7 @@ class Sensors:
 
         self.humidity_ax = figure.add_subplot(2, 2, 2)
         self.humidity_ax.set_ylim(humidity_low, humidity_high)
-        self.humidity_line, = self.humidity_ax.plot(self.time_ar, self.humidity_yar, 'b', marker='x')    
+        self.humidity_line, = self.humidity_ax.plot(self.time_ar, self.humidity_yar, 'b', marker='x')
 
     def update_dht11(self, i):
         sensor_data = self.get_data()
@@ -77,7 +77,7 @@ class Sensors:
 
         self.temp_ax.set_xlim(i-10, i+1)
         self.humidity_ax.set_xlim(i-10, i+1)
-    
+
         if(len(self.time_ar) > 15):
             self.time_ar.pop(0)
             self.temp_yar.pop(0)
