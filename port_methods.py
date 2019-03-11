@@ -7,6 +7,9 @@ def get_arduino_port():
 
     serial_devices = list(list_ports.comports())
     if key_string == "":
+        print("Activation key not found ! Make sure no other Arduino based devices")
+        print("apart from BioP are connected to host computer. Disconnecting other serial devices is not necessary.")
+        input("Press enter to continue.....")
         while True:
             arduino_found = False
             for device in serial_devices:
