@@ -13,7 +13,7 @@ def get_arduino_port():
         while True:
             arduino_found = False
             for device in serial_devices:
-                if "Arduino" in device.manufacturer:
+                if device.manufacturer is not None and "Arduino" in device.manufacturer:
                     arduino_found = True
                     keyfile = open("activation_key.txt", "w")
                     serial = device.serial_number
