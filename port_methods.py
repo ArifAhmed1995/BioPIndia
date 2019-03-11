@@ -5,22 +5,23 @@ def get_arduino_port():
     key_string = keyfile.readline()
     keyfile.close()
 
+    serial_devices = list(list_ports.comports())
     if key_string == "":
         while True:
-            serial_devices = list(list_ports.comports())
-            if(len(serial_devices) > 1):
-                print("More than one serial device connected. Please connect only BioP to your host computer.")
-                print("This will enable BioP software to recognise the device. After recognising you can connect other serial devices")
-                input("Press enter once you have disconnected other devices.....")
+            arduino_found = False
+            for device in serial_devices:
+                if "Arduino" in device.manufacturer:
+                    arduino_found = True
+                    keyfile = open("activation_key.txt", "w")
+                    serial = device.serial_number
+                    keyfile.write(serial)
+                    keyfile.close()
+                    return device.device # This returns port
+            if not arduino_found:
+                print("The BioP was not connected to the host device")
+                input("Press enter once you have connected it.......")
                 continue
-            else:
-                keyfile = open("activation_key.txt", "w")
-                serial = serial_devices[0].serial_number
-                keyfile.write(serial)
-                keyfile.close()
-                return serial_devices[0].device # This returns port
     else:
-        serial_devices = list(list_ports.comports())
         for serial_device in serial_devices:
             if serial_device.serial_number == key_string:
                 return serial_device.device
