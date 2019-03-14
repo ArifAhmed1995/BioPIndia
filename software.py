@@ -119,7 +119,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
     def exit(self):
         self.lcd_thread.terminate()
         self.sensors_plot_widget.stop()
-        quit()
+        quit(0)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

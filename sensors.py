@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import threading
 import serial
 import time
@@ -11,6 +12,11 @@ from port_methods import get_arduino_port
 class Sensors:
     def __init__(self, baudrate = 9600):
         self.port = get_arduino_port()
+
+        if self.port is None:
+            print("BioP not connected. Program will exit now.")
+            sys.exit(1)
+
         self.baudrate = baudrate
 
         self.sensors = serial.Serial(self.port, baudrate=self.baudrate,
