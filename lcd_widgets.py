@@ -24,3 +24,7 @@ class LCDTimer(object):
     def stop(self):
         self._timer.cancel()
         self.is_running = False
+
+    def terminate(self):
+        self.is_running = False
+        self._timer.cancel()

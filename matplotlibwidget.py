@@ -125,3 +125,5 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
             time.sleep(2)
             mySrc.data_signal.emit(self.sensors.get_data()) # <- Here you emit a signal!
 
+    def stop(self):
+        self.stop_event_loop()

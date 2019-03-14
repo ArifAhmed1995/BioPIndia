@@ -5,6 +5,7 @@ import subprocess
 import threading
 
 from threading import Timer
+from threading import Thread
 
 from biopindia import Ui_BioPIndia
 
@@ -54,7 +55,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.smoke_conc_lcd.setPalette(palette_smoke_conc)
 
         # Self start timer
-        lcd_thread = LCDTimer(1 , self.update_sensor_lcds)
+        self.lcd_thread = LCDTimer(1 , self.update_sensor_lcds)
 
         # Webcam Widget Integration
         self.webcam_widget = WebcamQWidget()
@@ -65,7 +66,6 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.actionCOM2.triggered.connect(lambda : self.switch_COM("/dev/ttyUSB1"))
         self.actionCOM3.triggered.connect(lambda : self.switch_COM("/dev/ttyACM0"))
         self.actionGenerate_GCode_for_STL_File.triggered.connect(self.generate_gcode)
-        #self.actionPost_process_GCode_for_BioP.triggered.connect(self.post_process())
         self.actionPrint_via_RepetierHost.triggered.connect(self.open_repetier_host)
         self.actionView_Loaded_STL_File.triggered.connect(self.view_stl_file)
         self.actionLoad_STL_File.triggered.connect(self.load_stl_file)
@@ -113,13 +113,12 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
                                                 "STL Files (*.stl *.STL)",options=options)
 
     def switch_COM(self, port):
-        #try:
         self.dht11_plot_widget.dht11_sensor.set_port(port)
         self.addDHT11MatplotlibQWidget(self.dht11_plot_widget)
-        #except SerialException:
-        #    QMessageBox().critical(self, "Port Access Error", "Could not open port "+port, QMessageBox.Ok)
 
     def exit(self):
+        self.lcd_thread.terminate()
+        self.sensors_plot_widget.stop()
         quit()
 
 if __name__ == '__main__':
