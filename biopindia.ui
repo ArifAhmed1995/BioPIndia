@@ -448,6 +448,7 @@
     <addaction name="actionPrint_via_RepetierHost"/>
     <addaction name="actionExit"/>
     <addaction name="actionLoad_STL_File"/>
+    <addaction name="actionView_Edit_GCode"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -528,6 +529,11 @@
   <action name="action2">
    <property name="text">
     <string>USB 2</string>
+   </property>
+  </action>
+  <action name="actionView_Edit_GCode">
+   <property name="text">
+    <string>View/Edit GCode</string>
    </property>
   </action>
  </widget>

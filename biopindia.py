@@ -162,11 +162,14 @@ class Ui_BioPIndia(object):
         self.action1.setObjectName("action1")
         self.action2 = QtWidgets.QAction(BioPIndia)
         self.action2.setObjectName("action2")
+        self.actionView_Edit_GCode = QtWidgets.QAction(BioPIndia)
+        self.actionView_Edit_GCode.setObjectName("actionView_Edit_GCode")
         self.menuFile.addAction(self.actionView_Loaded_STL_File)
         self.menuFile.addAction(self.actionGenerate_GCode_for_STL_File)
         self.menuFile.addAction(self.actionPrint_via_RepetierHost)
         self.menuFile.addAction(self.actionExit)
         self.menuFile.addAction(self.actionLoad_STL_File)
+        self.menuFile.addAction(self.actionView_Edit_GCode)
         self.menuEdit.addAction(self.actionPost_process_GCode_for_BioP)
         self.menuPort.addAction(self.actionCOM)
         self.menuPort.addAction(self.actionCOM2)
@@ -223,13 +226,6 @@ class Ui_BioPIndia(object):
         self.actionLoad_STL_File.setText(_translate("BioPIndia", "Load STL File"))
         self.action1.setText(_translate("BioPIndia", "USB 1"))
         self.action2.setText(_translate("BioPIndia", "USB 2"))
+        self.actionView_Edit_GCode.setText(_translate("BioPIndia", "View/Edit GCode"))
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    BioPIndia = QtWidgets.QMainWindow()
-    ui = Ui_BioPIndia()
-    ui.setupUi(BioPIndia)
-    BioPIndia.show()
-    sys.exit(app.exec_())

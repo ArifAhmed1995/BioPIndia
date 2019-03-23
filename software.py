@@ -12,7 +12,7 @@ from biopindia import Ui_BioPIndia
 from serial import SerialException
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QLCDNumber, QApplication, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QLCDNumber, QApplication, QMessageBox, QFileDialog, QPlainTextEdit
 
 
 from matplotlibwidget import SensorsMatplotlibQWidget
@@ -69,6 +69,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.actionPrint_via_RepetierHost.triggered.connect(self.open_repetier_host)
         self.actionView_Loaded_STL_File.triggered.connect(self.view_stl_file)
         self.actionLoad_STL_File.triggered.connect(self.load_stl_file)
+        self.actionView_Edit_GCode.triggered.connect(self.open_gcode_editor)
 
     def addSensorsMatplotlibQWidget(self, sensors_plot_widget):
         self.sensor_plot_grid.addWidget(sensors_plot_widget, *(0,1))
@@ -111,6 +112,11 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         options |= QFileDialog.DontUseNativeDialog
         self.stl_file, _ = QFileDialog.getOpenFileName(self,"Select a STL File", "",
                                                 "STL Files (*.stl *.STL)",options=options)
+
+    def open_gcode_editor(self):
+        gcode_edit = QPlainTextEdit()
+        gcode = open(str(self.stl_file)).read()
+        gcode_edit.setPlainText(gcode)
 
     def switch_COM(self, port):
         self.dht11_plot_widget.dht11_sensor.set_port(port)
