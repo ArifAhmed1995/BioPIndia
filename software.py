@@ -17,6 +17,8 @@ from PyQt5.QtWidgets import QLCDNumber, QApplication, QMessageBox, QFileDialog, 
 
 from matplotlibwidget import SensorsMatplotlibQWidget
 from lcd_widgets import LCDTimer
+from gcode_textbox import GCodeTextBox
+
 from webcam import *
 
 class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
@@ -26,6 +28,8 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.setupUi(self)
 
         self.stl_file = None
+        self.gcode_file = None
+
         self.current_dir = os.getcwd()
 
         # Exit choice on menu bar
@@ -101,7 +105,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         if self.stl_found():
             generate_command = "slic3r " + "'" + str(self.stl_file) +"' --output output.gcode"
             subprocess.Popen(generate_command, shell=True)
-            return self.current_dir + "/output.gcode"
+            self.gcode_file = self.current_dir + "/output.gcode"
 
     def open_repetier_host(self):
         repetier_host_path = "'" + self.current_dir + "/RepetierHostAppImage" + "'"
@@ -114,9 +118,8 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
                                                 "STL Files (*.stl *.STL)",options=options)
 
     def open_gcode_editor(self):
-        gcode_edit = QPlainTextEdit()
-        gcode = open(str(self.stl_file)).read()
-        gcode_edit.setPlainText(gcode)
+        self.gcode_edit_text_box = GCodeTextBox(self.gcode_file)
+        self.gcode_edit_text_box.show()
 
     def switch_COM(self, port):
         self.dht11_plot_widget.dht11_sensor.set_port(port)
