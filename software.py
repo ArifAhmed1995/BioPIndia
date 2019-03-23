@@ -26,7 +26,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.setupUi(self)
 
         self.stl_file = None
-        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.current_dir = os.getcwd()
 
         # Exit choice on menu bar
         self.actionExit.triggered.connect(self.exit)
@@ -94,18 +94,18 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
 
     def view_stl_file(self):
         if self.stl_found():
-            fstl = self.current_dir + "/fstl/build/fstl " + str(self.stl_file)
-            subprocess.Popen(fstl, shell=True)
+            fstl_path = "'" + self.current_dir + "/fstl/build/fstl" + "' '" + str(self.stl_file) + "'"
+            subprocess.Popen(fstl_path, shell=True)
 
     def generate_gcode(self):
         if self.stl_found():
-            generate_command = "slic3r " + str(self.stl_file) +" --output output.gcode"
+            generate_command = "slic3r " + "'" + str(self.stl_file) +"' --output output.gcode"
             subprocess.Popen(generate_command, shell=True)
             return self.current_dir + "/output.gcode"
 
     def open_repetier_host(self):
-        subprocess.check_call("./Repetier-Host-x86_64-2.1.2.AppImage",
-            stdout=subprocess.PIPE, shell=True)
+        repetier_host_path = "'" + self.current_dir + "/RepetierHostAppImage" + "'"
+        subprocess.check_call(repetier_host_path, stdout=subprocess.PIPE, shell=True)
 
     def load_stl_file(self):
         options = QFileDialog.Options()
