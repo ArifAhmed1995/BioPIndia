@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QVBoxLayout, QApplication, 
 from PyQt5.QtGui import QIcon, QPainter, QTextFormat, QColor, QTextCursor, QKeySequence, QClipboard, QTextCharFormat, QPalette
 from PyQt5.QtCore import Qt, QVariant, QRect, QDir, QFile, QFileInfo, QTextStream, QRegExp, QSettings
 
+from gcode_parser import GCodeParser
+
 lineBarColor = QColor("#00DED5")
 lineHighlightColor  = QColor("#BBDE00")
 
@@ -160,13 +162,17 @@ class TextEditor(QMainWindow):
         self.filemenu.addSeparator()
         self.filemenu.addAction(self.exitAct)
         bar.setStyleSheet(stylesheet2(self))
-        editmenu = bar.addMenu("Edit")
-        editmenu.addAction(QAction(QIcon.fromTheme('edit-copy'), "Copy", self, triggered = self.editor.copy, shortcut = QKeySequence.Copy))
-        editmenu.addAction(QAction(QIcon.fromTheme('edit-cut'), "Cut", self, triggered = self.editor.cut, shortcut = QKeySequence.Cut))
-        editmenu.addAction(QAction(QIcon.fromTheme('edit-paste'), "Paste", self, triggered = self.editor.paste, shortcut = QKeySequence.Paste))
-        editmenu.addAction(QAction(QIcon.fromTheme('edit-delete'), "Delete", self, triggered = self.editor.cut, shortcut = QKeySequence.Delete))
-        editmenu.addSeparator()
-        editmenu.addAction(QAction(QIcon.fromTheme('edit-select-all'), "Select All", self, triggered = self.editor.selectAll, shortcut = QKeySequence.SelectAll))
+
+        self.editmenu = bar.addMenu("Edit")
+        self.editmenu.addAction(QAction(QIcon.fromTheme('edit-copy'), "Copy", self, triggered = self.editor.copy, shortcut = QKeySequence.Copy))
+        self.editmenu.addAction(QAction(QIcon.fromTheme('edit-cut'), "Cut", self, triggered = self.editor.cut, shortcut = QKeySequence.Cut))
+        self.editmenu.addAction(QAction(QIcon.fromTheme('edit-paste'), "Paste", self, triggered = self.editor.paste, shortcut = QKeySequence.Paste))
+        self.editmenu.addAction(QAction(QIcon.fromTheme('edit-delete'), "Delete", self, triggered = self.editor.cut, shortcut = QKeySequence.Delete))
+        self.editmenu.addSeparator()
+        self.editmenu.addAction(QAction(QIcon.fromTheme('edit-select-all'), "Select All", self, triggered = self.editor.selectAll, shortcut = QKeySequence.SelectAll))
+
+        self.executemenu = bar.addMenu("Execute")
+        self.executemenu.addAction(QAction(QIcon.fromTheme('application-x-executable'), "Execute Script", self, triggered = self.execute_script))
 
         layoutV.addWidget(bar)
         layoutV.addWidget(self.tbf)
@@ -530,8 +536,14 @@ class TextEditor(QMainWindow):
     def strippedName(self, fullFileName):
         return QFileInfo(fullFileName).fileName()
 
+    def execute_script(self):
+        gp = GCodeParser()
+        gp.parseGCode(self.editor.document().toPlainText())
+        gp.executeSerialScript()
+
 def stylesheet2(self):
     return """
+
 QPlainTextEdit
 {
 background: #ECECEC;
@@ -548,3 +560,16 @@ border: 1px solid #1EAE3D;
 selection-background-color: #ACDED5;
 }
     """
+
+'''
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    win = TextEditor()
+    win.setWindowIcon(QIcon.fromTheme("application-text"))
+    win.setWindowTitle("Plain Text Edit" + "[*]")
+    win.setMinimumSize(640,250)
+    win.showMaximized()
+    if len(sys.argv) > 1:
+        win.openFileOnStart(sys.argv[1])
+    app.exec_()
+'''

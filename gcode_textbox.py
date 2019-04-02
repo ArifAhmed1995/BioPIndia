@@ -4,10 +4,14 @@ from text_editor import TextEditor
 
 class GCodeTextBox():
     def __init__(self, gcode_file):
-        win = TextEditor()
-        win.setWindowIcon(QIcon.fromTheme("application-text"))
-        win.setWindowTitle("Plain Text Edit" + "[*]")
-        win.setMinimumSize(400,600)
-        win.showMaximized()
-        win.openFileOnStart(gcode_file)
-        win.show()
+        self.win = TextEditor()
+        self.win.setWindowIcon(QIcon.fromTheme("application-text"))
+        self.win.setWindowTitle("Plain Text Edit" + "[*]")
+        self.win.setMinimumSize(400,600)
+        self.win.showMaximized()
+
+        self.gcode_file = gcode_file
+
+    def show(self):
+        self.win.openFileOnStart(self.gcode_file)
+        self.win.show()
