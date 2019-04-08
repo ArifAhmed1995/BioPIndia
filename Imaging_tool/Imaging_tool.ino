@@ -1,9 +1,17 @@
 //Created by Siddharth Kumar Sah
 //visit www.siddharthsah.com for more.
-
-
-char incomingByte; //this is to select a variable for the incoming value of the serial
 int x=0;
+int i;
+byte ib1;
+byte ib2;
+int incoming_signal;
+int stepper_delay=5000;
+char buffer[] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};// 8
+
+int x_stepper_iter;
+int y_stepper_iter;
+int z_stepper_iter;
+
 #define X_STEP_PIN         54  //pin selection
 #define X_DIR_PIN          55
 #define X_ENABLE_PIN       38
@@ -44,31 +52,31 @@ int x=0;
 #define TEMP_0_PIN          13   // ANALOG NUMBERING
 #define TEMP_1_PIN          14   // ANALOG NUMBERING
 
-void setup() {   //outputs 
-
+void setup()
+{   //outputs
   pinMode(LED_PIN  , OUTPUT);
-  
+
   pinMode(X_STEP_PIN  , OUTPUT);
   pinMode(X_DIR_PIN    , OUTPUT);
   pinMode(X_ENABLE_PIN    , OUTPUT);
-  
+
   pinMode(Y_STEP_PIN  , OUTPUT);
   pinMode(Y_DIR_PIN    , OUTPUT);
   pinMode(Y_ENABLE_PIN    , OUTPUT);
-  
+
   pinMode(Z_STEP_PIN  , OUTPUT);
   pinMode(Z_DIR_PIN    , OUTPUT);
   pinMode(Z_ENABLE_PIN    , OUTPUT);
-  
+
   pinMode(E_STEP_PIN  , OUTPUT);
   pinMode(E_DIR_PIN    , OUTPUT);
   pinMode(E_ENABLE_PIN    , OUTPUT);
-  
+
   pinMode(Q_STEP_PIN  , OUTPUT);
   pinMode(Q_DIR_PIN    , OUTPUT);
   pinMode(Q_ENABLE_PIN    , OUTPUT);
-  
-   digitalWrite(X_ENABLE_PIN    , LOW);  //set pins to start with low 
+
+   digitalWrite(X_ENABLE_PIN    , LOW);  //set pins to start with low
    digitalWrite(Y_ENABLE_PIN    , LOW);
    digitalWrite(Z_ENABLE_PIN    , LOW);
    digitalWrite(E_ENABLE_PIN    , LOW);
@@ -77,111 +85,105 @@ void setup() {   //outputs
    Serial.write("Imaging tool 1.0 by Luis Oliver 2017");
 }
 
-void loop () {
+void loop ()
+{
+  if (Serial.available() > 0)
+  {
+    Serial.readBytes(buffer, 2);
+    incoming_signal = atoi(buffer);
 
-  if (Serial.available() > 0) {    //seek serial
-    
-    incomingByte = Serial.read();   //incoming serial
-     Serial.print("I received: ");
-     Serial.println(incomingByte, DEC);  
-    
-    if(incomingByte == 'L') {
-      Serial.print("I sent L ");
-     for (x=0; x<133; x++){  //microsteps, for loop for moving the motors
-     digitalWrite(Y_DIR_PIN    , HIGH);
-     digitalWrite(Y_STEP_PIN    , HIGH);
-    
-      digitalWrite(Y_STEP_PIN    , LOW);
-      delay(5);
-     }
+    // 01 - Fan On
+    if(incoming_signal == 1)
+    {
+      digitalWrite(FAN_PIN, HIGH)
+    }// 02 - Fan Off
+    else if(incoming_signal == 2)
+    {
+      digitalWrite(FAN_PIN, LOW)
     }
-    if(incomingByte == 'R') {
-      Serial.print("I sent R ");
-       for (x=0; x<133; x++){
-      digitalWrite(Y_DIR_PIN    , LOW);
-      digitalWrite(Y_STEP_PIN    , HIGH);
-     
-      digitalWrite(Y_STEP_PIN, LOW);
-      delay(5);
-    }
-    }
-    if(incomingByte == 'Q') {
-      Serial.print("I sent Q ");
-     for (x=0; x<500; x++){
-     digitalWrite(X_DIR_PIN    , HIGH);
-     digitalWrite(X_STEP_PIN    , HIGH);
-     
-      digitalWrite(X_STEP_PIN    , LOW);
-      delay(1);
-     }
-    }
-    if(incomingByte == 'W') {
-      Serial.print("I sent W ");
-       for (x=0; x<500; x++){
-      digitalWrite(X_DIR_PIN    , LOW);
-      digitalWrite(X_STEP_PIN    , HIGH);
-      digitalWrite(X_STEP_PIN, LOW);
-      delay(1);
-    }
-    }
-    if(incomingByte == 'A') {
-      Serial.print("I sent A");
-     for (x=0; x<150; x++){
-     digitalWrite(Q_DIR_PIN    , HIGH);
-     digitalWrite(Q_STEP_PIN    , HIGH);
-      digitalWrite(Q_STEP_PIN    , LOW);
-      delay(2);
-     }
-    }
-    if(incomingByte == 'S') {
-      Serial.print("I sent S ");
-       for (x=0; x<150; x++){
-      digitalWrite(Q_DIR_PIN    , LOW);
-      digitalWrite(Q_STEP_PIN    , HIGH);
-      digitalWrite(Q_STEP_PIN, LOW);
-      delay(2);
-    }
-    }  //start code part for Z&X for E_***_PIN 
-    if(incomingByte == 'Z') {
-      Serial.print("I sent Z ");
-     for (x=0; x<500; x++){                    
-     digitalWrite(E_DIR_PIN    , HIGH);
-     digitalWrite(E_STEP_PIN    , HIGH);
-      digitalWrite(E_STEP_PIN    , LOW);
-      delay(1);
-     }
-    }
-    if(incomingByte == 'X') {
-      Serial.print("I sent X ");
-       for (x=0; x<500; x++){
-      digitalWrite(E_DIR_PIN    , LOW);
-      digitalWrite(E_STEP_PIN    , HIGH);
-      digitalWrite(E_STEP_PIN, LOW);
-      delay(1);
-    } //end code part for Z&X for E_***_PIN 
 
-    }  //start code part for N&M for Z_***_PIN 
-    if(incomingByte == 'N') {
-      Serial.print("I sent N ");
-     for (x=0; x<250; x++){                    
-     digitalWrite(Z_DIR_PIN    , HIGH);
-     digitalWrite(Z_STEP_PIN    , HIGH);
-      digitalWrite(Z_STEP_PIN    , LOW);
-      delay(1);
-     }
+    // 03 - Y forward/DIR_PIN : HIGH
+    if(incoming_signal == 3)
+    {
+        Serial.readBytes(buffer, 8);   
+        y_stepper_iter = atoi(buffer);
+       for (x=0; x<y_stepper_iter; x++)
+       {  //microsteps, for loop for moving the motors
+          digitalWrite(Y_DIR_PIN    , HIGH);
+          digitalWrite(Y_STEP_PIN    , HIGH);
+          digitalWrite(Y_STEP_PIN    , LOW);
+          delayMicroseconds(stepper_delay);
+       }
+    }// 04 - Y backward/ DIR_PIN : LOW
+    else if(incoming_signal == 4)
+    {
+        Serial.readBytes(buffer, 8);   
+        y_stepper_iter = atoi(buffer);
+       for (x=0; x<y_stepper_iter; x++)
+       {  //microsteps, for loop for moving the motors
+          digitalWrite(Y_DIR_PIN    , LOW);
+          digitalWrite(Y_STEP_PIN    , HIGH);
+          digitalWrite(Y_STEP_PIN    , LOW);
+          delayMicroseconds(stepper_delay);
+       }
+    }// 05 - X forward/ DIR_PIN : HIGH
+    else if(incoming_signal == 5)
+    {
+        Serial.readBytes(buffer, 8);   
+        x_stepper_iter = atoi(buffer);
+
+        for (x=0; x<x_stepper_iter; x++)
+        {
+            digitalWrite(X_DIR_PIN    , HIGH);
+            digitalWrite(X_STEP_PIN    , HIGH);
+            digitalWrite(X_STEP_PIN    , LOW);
+            delayMicroseconds(stepper_delay/5);
+        }
+    }// 06 - X backward/ DIR_PIN : LOW
+    else if(incoming_signal == 6)
+    {
+        Serial.readBytes(buffer, 8);   
+        x_stepper_iter = atoi(buffer);
+       
+        for (x=0; x<x_stepper_iter; x++)
+        {
+            digitalWrite(X_DIR_PIN    , LOW);
+            digitalWrite(X_STEP_PIN    , HIGH);
+            digitalWrite(X_STEP_PIN    , LOW);
+            delayMicroseconds(stepper_delay/5);
+        }
+    }// 07 - Z forward/ DIR_PIN : HIGH
+    else if(incoming_signal == 7)
+    {
+        Serial.readBytes(buffer, 8);   
+        z_stepper_iter = atoi(buffer);
+
+       for (x=0; x<z_stepper_iter; x++)
+       {
+          digitalWrite(Z_DIR_PIN    , HIGH);
+          digitalWrite(Z_STEP_PIN    , HIGH);
+          digitalWrite(Z_STEP_PIN, LOW);
+          delayMicroseconds(stepper_delay/5);
+       }
+    }// 08 - Z backward/ DIR_PIN : LOW
+    else if(incoming_signal == 8)
+    {
+        Serial.readBytes(buffer, 8);   
+        z_stepper_iter = atoi(buffer);
+
+       for (x=0; x<z_stepper_iter; x++)
+       {
+          digitalWrite(Z_DIR_PIN    , LOW);
+          digitalWrite(Z_STEP_PIN    , HIGH);
+          digitalWrite(Z_STEP_PIN, LOW);
+          delayMicroseconds(stepper_delay/5);
+       }
+    }// 09 - Change delayMicroseconds Time(Increase FeedRate)
+    else if(incoming_signal == 9)
+    {
+        Serial.readBytes(buffer, 8);
+        stepper_delay = atoi(buffer);
     }
-    if(incomingByte == 'M') {
-      Serial.print("I sent M ");
-       for (x=0; x<250; x++){
-      digitalWrite(Z_DIR_PIN    , LOW);
-      digitalWrite(Z_STEP_PIN    , HIGH);
-      digitalWrite(Z_STEP_PIN, LOW);
-      delay(1);
-    } //end code part for N&M for Z_***_PIN 
-    
-    }
-    delay(10);
-  }  
+    delayMicroseconds(stepper_delay * 2);
+  }
 }
- 
-  
