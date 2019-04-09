@@ -17,7 +17,6 @@ class GCodeParser():
                                   parity=serial.PARITY_NONE,
                                   stopbits=serial.STOPBITS_ONE,
                                   timeout=2, xonxoff=0, rtscts=0)
-
         self.slic3r_to_arduino_dictionary = {
                             "M107" : self.commands.M107,
                             "M106" : self.commands.M106,
@@ -42,10 +41,12 @@ class GCodeParser():
         command = command.split(" ")
         command_length = len(command)
 
-        if command_length > 1:
-            self.slic3r_to_arduino_dictionary[command[0]](self.extruder, command[1:])
-        else:
-            self.slic3r_to_arduino_dictionary[command[0]](self.extruder)
+        method = self.slic3r_to_arduino_dictionary.get(command[0], None)
+        if method is not None:
+            if command_length > 1:
+                method(self.extruder, command[1:])
+            else:
+                method(self.extruder)
 
     def parseGCode(self, gcode):
         # serial_commands are filled up here

@@ -7,6 +7,8 @@ from PyQt5.QtCore import Qt, QVariant, QRect, QDir, QFile, QFileInfo, QTextStrea
 
 from gcode_parser import GCodeParser
 
+from port_methods import PortMethods
+
 lineBarColor = QColor("#00DED5")
 lineHighlightColor  = QColor("#BBDE00")
 
@@ -537,9 +539,11 @@ class TextEditor(QMainWindow):
         return QFileInfo(fullFileName).fileName()
 
     def execute_script(self):
-        gp = GCodeParser()
+        pm = PortMethods()
+        extruder_port = pm.get_extruder_port()
+        #extruder_port = -1
+        gp = GCodeParser(extruder_port)
         gp.parseGCode(self.editor.document().toPlainText())
-        gp.executeSerialScript()
 
 def stylesheet2(self):
     return """
@@ -561,7 +565,6 @@ selection-background-color: #ACDED5;
 }
     """
 
-'''
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = TextEditor()
@@ -572,4 +575,3 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         win.openFileOnStart(sys.argv[1])
     app.exec_()
-'''

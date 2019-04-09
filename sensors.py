@@ -7,11 +7,12 @@ import time
 
 import numpy as np
 
-from port_methods import get_arduino_port
+from port_methods import PortMethods
 
 class Sensors:
     def __init__(self, baudrate = 9600):
-        self.port = get_arduino_port()
+        pm = PortMethods()
+        self.port = pm.get_sensors_port()
 
         if self.port is None:
             print("BioP not connected. Program will exit now.")

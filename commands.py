@@ -34,13 +34,15 @@ class Commands(object):
         the fan is simple. It's either ON or OFF.
         '''
         arduino.write(('01').encode('utf-8'))
+        #print('01')
 
-    def M107(self,arduino, *args):
+    def M107(self, arduino, *args):
         '''
         Usually there are many arguments supplied but I think for us
         the fan is simple. It's either ON or OFF.
         '''
         arduino.write(('02').encode('utf-8'))
+        #print('02')
 
     def G1(self, arduino, *args):
         '''
@@ -73,12 +75,13 @@ class Commands(object):
 
         # Ignore E value for now.
         for arg in G1_args:
-            if(arg[0] == 'X'):
-                x_coord = float(arg[1:])
-            elif(arg[0] == 'Y'):
-                y_coord = float(arg[1:])
-            elif(arg[0] == 'Z'):
-                y_coord = float(arg[1:])
+            if len(arg) > 1:
+                if(arg[0] == 'X'):
+                    x_coord = float(arg[1:])
+                elif(arg[0] == 'Y'):
+                    y_coord = float(arg[1:])
+                elif(arg[0] == 'Z'):
+                    z_coord = float(arg[1:])
 
         #TODO : Make this block less repetitive. Easy to do
         if x_coord is not None:
@@ -90,11 +93,14 @@ class Commands(object):
 
             if x_stepper_dir > 0:
                 arduino.write(('05').encode('utf-8'))
+                #print('05')
             else:
                 arduino.write(('06').encode('utf-8'))
+                #print('06')
 
             x_stepper_iterations = str(x_stepper_iterations)
             arduino.write((x_stepper_iterations).encode('utf-8'))
+            #print("X ", x_stepper_iterations)
 
         if y_coord is not None:
             linear_distance_y = y_coord - self.attributes['Y']
@@ -105,11 +111,14 @@ class Commands(object):
 
             if y_stepper_dir > 0:
                 arduino.write(('03').encode('utf-8'))
+                #print('03')
             else:
                 arduino.write(('04').encode('utf-8'))
+                #print('04')
 
             y_stepper_iterations = str(y_stepper_iterations)
             arduino.write((y_stepper_iterations).encode('utf-8'))
+            #print("Y ", y_stepper_iterations)
 
         if z_coord is not None:
             linear_distance_z = z_coord - self.attributes['Z']
@@ -120,8 +129,10 @@ class Commands(object):
 
             if z_stepper_dir > 0:
                 arduino.write(('07').encode('utf-8'))
+                #print('07')
             else:
                 arduino.write(('08').encode('utf-8'))
-
-            z_stepper_iterations = str(x_stepper_iterations)
+                #print('08')
+            z_stepper_iterations = str(z_stepper_iterations)
             arduino.write((z_stepper_iterations).encode('utf-8'))
+            #print("Z ", z_stepper_iterations)

@@ -118,6 +118,8 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
                                                 "STL Files (*.stl *.STL)",options=options)
 
     def open_gcode_editor(self):
+        if self.gcode_file is None:
+            self.gcode_file = self.current_dir + "/output.gcode"
         self.gcode_edit_text_box = GCodeTextBox(self.gcode_file)
         self.gcode_edit_text_box.show()
 
