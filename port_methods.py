@@ -6,7 +6,7 @@ def find_arduino(serial_devices):
         for device in serial_devices:
             if device.manufacturer is not None and "Arduino" in device.manufacturer:
                 arduino_found = True
-                keyfile = open("activation_key.txt", "w")
+                keyfile = open("activation_key.txt", "a+")
                 serial = device.serial_number
                 keyfile.write(serial+"\n")
                 keyfile.close()
