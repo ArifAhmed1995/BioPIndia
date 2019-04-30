@@ -71,7 +71,7 @@ class NumberBar(QWidget):
             painter.end()
 
 class TextEditor(QMainWindow):
-    def __init__(self, parent = None):
+    def __init__(self, port_methods_object, parent = None):
         super(TextEditor, self).__init__(parent)
         self.MaxRecentFiles = 5
         self.windowList = []
@@ -196,6 +196,10 @@ class TextEditor(QMainWindow):
         # Brackets ExtraSelection ...
         self.left_selected_bracket  = QTextEdit.ExtraSelection()
         self.right_selected_bracket = QTextEdit.ExtraSelection()
+
+        # Sensors setup
+        self.sensors_port = port_methods_object.get_sensors_port()
+        self.extruder_port = port_methods_object.get_extruder_port()
 
     def createActions(self):
         for i in range(self.MaxRecentFiles):
@@ -539,10 +543,8 @@ class TextEditor(QMainWindow):
         return QFileInfo(fullFileName).fileName()
 
     def execute_script(self):
-        pm = PortMethods()
-        extruder_port = pm.get_extruder_port()
         #extruder_port = -1
-        gp = GCodeParser(extruder_port)
+        gp = GCodeParser(self.extruder_port)
         gp.parseGCode(self.editor.document().toPlainText())
 
 def stylesheet2(self):

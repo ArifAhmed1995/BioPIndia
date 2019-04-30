@@ -21,6 +21,8 @@ from gcode_textbox import GCodeTextBox
 
 from webcam import *
 
+from port_methods import PortMethods
+
 class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
@@ -35,8 +37,13 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         # Exit choice on menu bar
         self.actionExit.triggered.connect(self.exit)
 
+        # One time port open for both sensors and extruder. This must
+        # be done and one time only otherwise read/write issues will arise
+        # with the activation key file.
+        self.pm = PortMethods()
+
         # Live Plot for sensors
-        self.sensors_plot_widget = SensorsMatplotlibQWidget()
+        self.sensors_plot_widget = SensorsMatplotlibQWidget(self.pm.get_sensors_port())
         self.addSensorsMatplotlibQWidget(self.sensors_plot_widget)
 
         # LCD update functions
@@ -120,7 +127,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
     def open_gcode_editor(self):
         if self.gcode_file is None:
             self.gcode_file = self.current_dir + "/output.gcode"
-        self.gcode_edit_text_box = GCodeTextBox(self.gcode_file)
+        self.gcode_edit_text_box = GCodeTextBox(self.gcode_file, self.pm)
         self.gcode_edit_text_box.show()
 
     def switch_COM(self, port):

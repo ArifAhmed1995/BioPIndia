@@ -33,13 +33,13 @@ class PortMethods:
             print("Activation key not found !")
             print("Let's set up the printer.")
             print("Please disconnect all Arduinos from the computer. Disconnecting other serial devices is not necessary.")
-            print("Once that's done, Connect the sensors arduino please.....")
-            input("Press enter to continue.....")
+            print("Connect the sensors arduino please.....")
+            input("Once that's done, Press enter to continue.....")
 
             self.sensors_device = find_arduino(serial_devices) # This sets the sensors device.
 
             print("Sensors found ! Connect the extruder arduino please.....")
-            input("Press enter to continue.....")
+            input("Once that's done, Press enter to continue.....")
 
             self.extruder_device = find_arduino(serial_devices) # This sets the extruder device.
         else:

@@ -44,6 +44,29 @@ class Commands(object):
         arduino.write(('02').encode('utf-8'))
         #print('02')
 
+    def linear_coord_move(self, arduino, axis, coord, step_angle, timing_pulley_diameter):
+        firmware_commands = []
+        if axis == 0:
+            firmware_commands = ['X', '05', '06']
+        elif axis == 1:
+            firmware_commands = ['Y', '03', '04']
+        else:
+            firmware_commands = ['Z', '07', '08']
+
+        linear_distance = coord - self.attributes[firmware_commands[0]]
+        stepper_dir = 1 if linear_distance > 0 else 0
+
+        linear_distance = abs(linear_distance)
+        stepper_iterations = self.mm_to_iterations(linear_distance, step_angle, timing_pulley_diameter)
+
+        if stepper_dir > 0:
+            arduino.write((firmware_commands[1]).encode('utf-8'))
+        else:
+            arduino.write((firmware_commands[2]).encode('utf-8'))
+
+        stepper_iterations = str(stepper_iterations)
+        arduino.write((stepper_iterations).encode('utf-8'))
+
     def G1(self, arduino, *args):
         '''
         Usage
@@ -83,56 +106,9 @@ class Commands(object):
                 elif(arg[0] == 'Z'):
                     z_coord = float(arg[1:])
 
-        #TODO : Make this block less repetitive. Easy to do
         if x_coord is not None:
-            linear_distance_x = x_coord - self.attributes['X']
-            x_stepper_dir = 1 if linear_distance_x > 0 else 0
-
-            linear_distance_x = abs(linear_distance_x)
-            x_stepper_iterations = self.mm_to_iterations(linear_distance_x, step_angle, timing_pulley_diameter)
-
-            if x_stepper_dir > 0:
-                arduino.write(('05').encode('utf-8'))
-                #print('05')
-            else:
-                arduino.write(('06').encode('utf-8'))
-                #print('06')
-
-            x_stepper_iterations = str(x_stepper_iterations)
-            arduino.write((x_stepper_iterations).encode('utf-8'))
-            #print("X ", x_stepper_iterations)
-
+            self.linear_coord_move(arduino, 0, x_coord, step_angle, timing_pulley_diameter)
         if y_coord is not None:
-            linear_distance_y = y_coord - self.attributes['Y']
-            y_stepper_dir = 1 if linear_distance_y > 0 else 0
-
-            linear_distance_y = abs(linear_distance_y)
-            y_stepper_iterations = self.mm_to_iterations(linear_distance_y, step_angle, timing_pulley_diameter)
-
-            if y_stepper_dir > 0:
-                arduino.write(('03').encode('utf-8'))
-                #print('03')
-            else:
-                arduino.write(('04').encode('utf-8'))
-                #print('04')
-
-            y_stepper_iterations = str(y_stepper_iterations)
-            arduino.write((y_stepper_iterations).encode('utf-8'))
-            #print("Y ", y_stepper_iterations)
-
+            self.linear_coord_move(arduino, 1, y_coord, step_angle, timing_pulley_diameter)
         if z_coord is not None:
-            linear_distance_z = z_coord - self.attributes['Z']
-            z_stepper_dir = 1 if linear_distance_z > 0 else 0
-
-            linear_distance_z = abs(linear_distance_z)
-            z_stepper_iterations = self.mm_to_iterations(linear_distance_z, step_angle, timing_pulley_diameter)
-
-            if z_stepper_dir > 0:
-                arduino.write(('07').encode('utf-8'))
-                #print('07')
-            else:
-                arduino.write(('08').encode('utf-8'))
-                #print('08')
-            z_stepper_iterations = str(z_stepper_iterations)
-            arduino.write((z_stepper_iterations).encode('utf-8'))
-            #print("Z ", z_stepper_iterations)
+            self.linear_coord_move(arduino, 2, z_coord, step_angle, timing_pulley_diameter)

@@ -7,7 +7,7 @@ class GCodeParser():
         self.serial_commands = []
         self.commands = Commands()
         # Non-existent commands:
-        # The following commands will not be ignored by the parser
+        # The following commands will be ignored by the parser
         # The reason is mentioned beside
         # G21 - BioP printing will all happen in mm
         # G90 - Absolute coordinates will always be used

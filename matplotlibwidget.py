@@ -24,10 +24,10 @@ class Communicate(QtCore.QObject):
     data_signal = QtCore.pyqtSignal(list)
 
 class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
-    def __init__(self):
+    def __init__(self, port):
         self.n = np.linspace(0, 1, 1)
         self.abc = 1
-        self.sensors = Sensors()
+        self.sensors = Sensors(port)
         self.sensors_port = self.sensors.port
         self.sensors.flush()
 
