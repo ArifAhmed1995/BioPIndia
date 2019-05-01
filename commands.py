@@ -67,6 +67,8 @@ class Commands(object):
         stepper_iterations = str(stepper_iterations)
         arduino.write((stepper_iterations).encode('utf-8'))
 
+        #TODO : Update attributes after one linear move.
+
     def G1(self, arduino, *args):
         '''
         Usage
