@@ -29,7 +29,7 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
         self.abc = 1
         self.sensors = Sensors(port)
         self.sensors_port = self.sensors.port
-        self.sensors.flush()
+        #self.sensors.flush()
 
         self.temp_yar = [0]
         self.humidity_yar = [0]
@@ -123,7 +123,7 @@ class SensorsMatplotlibQWidget(FigureCanvas, TimedAnimation):
             if self.sensors_port != self.sensors.get_port():
                 break
             time.sleep(2)
-            mySrc.data_signal.emit(self.sensors.get_data()) # <- Here you emit a signal!
+            mySrc.data_signal.emit(self.sensors.get_data()) # <- Get Sensors Data.
 
     def stop(self):
         self.stop_event_loop()

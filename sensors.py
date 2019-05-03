@@ -7,6 +7,8 @@ import time
 
 import numpy as np
 
+from subprocess import Popen, PIPE
+
 class Sensors:
     def __init__(self, port, baudrate = 9600):
         self.port = port
@@ -17,13 +19,10 @@ class Sensors:
 
         self.baudrate = baudrate
 
-        self.sensors = serial.Serial(self.port, baudrate=self.baudrate,
-                                  bytesize=serial.EIGHTBITS,
-                                  parity=serial.PARITY_NONE,
-                                  stopbits=serial.STOPBITS_ONE,
-                                  timeout=2, xonxoff=0, rtscts=0)
+        # Instead of sensors being directly linked to sensor arduino, we link it to a perpetual output stream which
+        # in turn reads from the sensors arduino.
+        self.sensors = Popen(['python3', './read_sensors.py', str(port), str(baudrate)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-        self.active = self.sensors.isOpen()
         self.time_ar = []
         self.temp_yar = []
         self.humidity_yar = []
@@ -34,17 +33,8 @@ class Sensors:
     def get_port(self):
         return self.port
 
-    def is_active(self):
-        return self.active
-
-    def flush(self):
-        # Flush the port
-        self.sensors.readline()
-
     def get_data(self):
-        while(self.sensors.inWaiting()==0):
-            pass
-        return self.sensors.readline().split()
+        return self.sensors.stdout.readline().split()
 
     def get_temp_limits(self):
         return 20, 70
@@ -56,8 +46,6 @@ class Sensors:
         return 0, 200
 
     def plot_data(self, figure):
-        self.flush()
-
         temp_low, temp_high = self.get_temp_limits()
         humidity_low, humidity_high = self.get_humidity_limits()
 
@@ -87,4 +75,3 @@ class Sensors:
             self.temp_yar.pop(0)
             self.humidity_yar.pop(0)
 
-        print(self.port)
