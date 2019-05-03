@@ -71,7 +71,7 @@ class NumberBar(QWidget):
             painter.end()
 
 class TextEditor(QMainWindow):
-    def __init__(self, port_methods_object, parent = None):
+    def __init__(self, port_methods_object, sensors_serial, parent = None):
         super(TextEditor, self).__init__(parent)
         self.MaxRecentFiles = 5
         self.windowList = []
@@ -200,6 +200,9 @@ class TextEditor(QMainWindow):
         # Sensors setup
         self.sensors_port = port_methods_object.get_sensors_port()
         self.extruder_port = port_methods_object.get_extruder_port()
+
+        # Hacky way to get the serial object and get control to open/close it.
+        self.sensors_serial = sensors_serial
 
     def createActions(self):
         for i in range(self.MaxRecentFiles):
@@ -544,8 +547,13 @@ class TextEditor(QMainWindow):
 
     def execute_script(self):
         #extruder_port = -1
+        self.sensors_serial.close()
+
         gp = GCodeParser(self.extruder_port)
         gp.parseGCode(self.editor.document().toPlainText())
+
+        self.sensors_serial.open()
+        # Once GCode parsing is done, open sensors again
 
 def stylesheet2(self):
     return """

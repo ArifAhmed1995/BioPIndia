@@ -51,6 +51,14 @@ class GCodeParser():
     def parseGCode(self, gcode):
         # serial_commands are filled up here
         gcode = gcode.split("\n")
+
+        # TODO : Parallelize this... Working on it on a separate branch
+        # For now, we manually close sensors and open extruder, then vice versa once GCode
+        # is parsed through.
+
+        # Sensors serial is already closed by this time.
+        self.extruder.open()
+
         for line in gcode:
             line_spl = self.separateCommandComment(line)
             command, comment = line_spl
@@ -63,3 +71,5 @@ class GCodeParser():
             #if len(command) < 1:
             #    self.serial_commands.append(self.slic3r_to_arduino_dictionary[command])
 
+        self.extruder.close()
+        # Close extruder so that sensors can be opened again

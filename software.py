@@ -127,7 +127,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
     def open_gcode_editor(self):
         if self.gcode_file is None:
             self.gcode_file = self.current_dir + "/output.gcode"
-        self.gcode_edit_text_box = GCodeTextBox(self.gcode_file, self.pm)
+        self.gcode_edit_text_box = GCodeTextBox(self.gcode_file, self.pm, self.sensors_plot_widget.sensors.sensors)
         self.gcode_edit_text_box.show()
 
     def switch_COM(self, port):

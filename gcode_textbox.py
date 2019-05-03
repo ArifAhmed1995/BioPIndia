@@ -3,8 +3,8 @@ from PyQt5.QtGui import QIcon
 from text_editor import TextEditor
 
 class GCodeTextBox():
-    def __init__(self, gcode_file, port_methods_object):
-        self.win = TextEditor(port_methods_object)
+    def __init__(self, gcode_file, port_methods_object, sensors_serial):
+        self.win = TextEditor(port_methods_object, sensors_serial)
         self.win.setWindowIcon(QIcon.fromTheme("application-text"))
         self.win.setWindowTitle("Plain Text Edit" + "[*]")
         self.win.setMinimumSize(400,600)
