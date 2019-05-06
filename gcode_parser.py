@@ -57,7 +57,8 @@ class GCodeParser():
         # is parsed through.
 
         # Sensors serial is already closed by this time.
-        self.extruder.open()
+        if not self.extruder.is_open:
+            self.extruder.open()
 
         for line in gcode:
             line_spl = self.separateCommandComment(line)

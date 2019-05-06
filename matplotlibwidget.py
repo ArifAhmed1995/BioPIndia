@@ -14,6 +14,7 @@ from matplotlib.figure import Figure
 from matplotlib.animation import TimedAnimation
 from matplotlib.lines import Line2D
 import time
+
 import threading
 
 import numpy as np

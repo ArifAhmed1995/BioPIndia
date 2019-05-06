@@ -86,5 +86,3 @@ class Sensors:
             self.time_ar.pop(0)
             self.temp_yar.pop(0)
             self.humidity_yar.pop(0)
-
-        print(self.port)
