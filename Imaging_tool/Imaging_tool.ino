@@ -55,7 +55,7 @@ int z_stepper_iter;
 void setup()
 {   //outputs
   pinMode(LED_PIN  , OUTPUT);
-
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(X_STEP_PIN  , OUTPUT);
   pinMode(X_DIR_PIN    , OUTPUT);
   pinMode(X_ENABLE_PIN    , OUTPUT);
@@ -95,11 +95,11 @@ void loop ()
     // 01 - Fan On
     if(incoming_signal == 1)
     {
-      digitalWrite(FAN_PIN, HIGH)
+      digitalWrite(FAN_PIN, HIGH);
     }// 02 - Fan Off
     else if(incoming_signal == 2)
     {
-      digitalWrite(FAN_PIN, LOW)
+      digitalWrite(FAN_PIN, LOW);
     }
 
     // 03 - Y forward/DIR_PIN : HIGH
@@ -109,10 +109,12 @@ void loop ()
         y_stepper_iter = atoi(buffer);
        for (x=0; x<y_stepper_iter; x++)
        {  //microsteps, for loop for moving the motors
+          digitalWrite(LED_BUILTIN, LOW);
           digitalWrite(Y_DIR_PIN    , HIGH);
           digitalWrite(Y_STEP_PIN    , HIGH);
           digitalWrite(Y_STEP_PIN    , LOW);
           delayMicroseconds(stepper_delay);
+          digitalWrite(LED_BUILTIN, HIGH);
        }
     }// 04 - Y backward/ DIR_PIN : LOW
     else if(incoming_signal == 4)
