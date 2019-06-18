@@ -1,8 +1,10 @@
 from serial.tools import list_ports
 
-def find_arduino(serial_devices, existing_devices):
+def find_arduino(existing_devices):
     while True:
         arduino_found = False
+        serial_devices = list(list_ports.comports())
+
         for device in serial_devices:
             if device.manufacturer is not None and "Arduino" in device.manufacturer and device not in existing_devices:
                 arduino_found = True
@@ -31,7 +33,7 @@ class PortMethods:
 
         keyfile.close()
 
-        serial_devices = list(list_ports.comports())
+
         if self.sensors_key == "" or self.extruder_key == "":
             print("Activation key not found !")
             print("Let's set up the printer.")
@@ -39,14 +41,15 @@ class PortMethods:
             print("Connect the sensors arduino please.....")
             input("Once that's done, Press enter to continue.....")
 
-            self.sensors_device = find_arduino(serial_devices, self.devices) # This sets the sensors device.
+            self.sensors_device = find_arduino(self.devices) # This sets the sensors device.
 
             print("Sensors found ! Connect the extruder arduino please.....")
             input("Once that's done, Press enter to continue.....")
 
-            serial_devices = list(list_ports.comports())
-            self.extruder_device = find_arduino(serial_devices, self.devices) # This sets the extruder device.
+            self.extruder_device = find_arduino(self.devices) # This sets the extruder device.
         else:
+            serial_devices = list(list_ports.comports())
+
             for serial_device in serial_devices:
                 if serial_device.serial_number == self.sensors_key:
                     self.sensors_device = serial_device.device
