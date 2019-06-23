@@ -81,6 +81,7 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.actionView_Loaded_STL_File.triggered.connect(self.view_stl_file)
         self.actionLoad_STL_File.triggered.connect(self.load_stl_file)
         self.actionView_Edit_GCode.triggered.connect(self.open_gcode_editor)
+        self.actionOpen_CAD_Tool.triggered.connect(self.open_cad_editor)
 
     def addSensorsMatplotlibQWidget(self, sensors_plot_widget):
         self.sensor_plot_grid.addWidget(sensors_plot_widget, *(0,1))
@@ -129,6 +130,10 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
             self.gcode_file = self.current_dir + "/output.gcode"
         self.gcode_edit_text_box = GCodeTextBox(self.gcode_file, self.pm, self.sensors_plot_widget.sensors.sensors)
         self.gcode_edit_text_box.show()
+
+    def open_cad_editor(self):
+        cad_tool_path = ["python3", self.current_dir + "/pythoncad_qt.py"]
+        subprocess.Popen(cad_tool_path, shell=False)
 
     def switch_COM(self, port):
         self.dht11_plot_widget.dht11_sensor.set_port(port)

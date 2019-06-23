@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'biopindia.ui'
 #
-# Created by: PyQt5 UI code generator 5.12
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -164,12 +164,15 @@ class Ui_BioPIndia(object):
         self.action2.setObjectName("action2")
         self.actionView_Edit_GCode = QtWidgets.QAction(BioPIndia)
         self.actionView_Edit_GCode.setObjectName("actionView_Edit_GCode")
+        self.actionOpen_CAD_Tool = QtWidgets.QAction(BioPIndia)
+        self.actionOpen_CAD_Tool.setObjectName("actionOpen_CAD_Tool")
         self.menuFile.addAction(self.actionView_Loaded_STL_File)
         self.menuFile.addAction(self.actionGenerate_GCode_for_STL_File)
         self.menuFile.addAction(self.actionPrint_via_RepetierHost)
         self.menuFile.addAction(self.actionExit)
         self.menuFile.addAction(self.actionLoad_STL_File)
         self.menuFile.addAction(self.actionView_Edit_GCode)
+        self.menuFile.addAction(self.actionOpen_CAD_Tool)
         self.menuEdit.addAction(self.actionPost_process_GCode_for_BioP)
         self.menuPort.addAction(self.actionCOM)
         self.menuPort.addAction(self.actionCOM2)
@@ -227,5 +230,6 @@ class Ui_BioPIndia(object):
         self.action1.setText(_translate("BioPIndia", "USB 1"))
         self.action2.setText(_translate("BioPIndia", "USB 2"))
         self.actionView_Edit_GCode.setText(_translate("BioPIndia", "View/Edit GCode"))
+        self.actionOpen_CAD_Tool.setText(_translate("BioPIndia", "Open CAD Tool"))
 
 

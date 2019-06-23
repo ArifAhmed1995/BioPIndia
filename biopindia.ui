@@ -449,6 +449,7 @@
     <addaction name="actionExit"/>
     <addaction name="actionLoad_STL_File"/>
     <addaction name="actionView_Edit_GCode"/>
+    <addaction name="actionOpen_CAD_Tool"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -534,6 +535,11 @@
   <action name="actionView_Edit_GCode">
    <property name="text">
     <string>View/Edit GCode</string>
+   </property>
+  </action>
+  <action name="actionOpen_CAD_Tool">
+   <property name="text">
+    <string>Open CAD Tool</string>
    </property>
   </action>
  </widget>
