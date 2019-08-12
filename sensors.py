@@ -12,18 +12,19 @@ class Sensors:
         self.port = port
 
         if self.port is None:
-            print("BioP not connected. Program will exit now.")
-            sys.exit(1)
+            print("BioP not connected. Only offline tools available for use.")
+            self.active = False
+            self.baudrate = baudrate
+            self.sensors = None
+        else:
+            self.baudrate = baudrate
 
-        self.baudrate = baudrate
-
-        self.sensors = serial.Serial(self.port, baudrate=self.baudrate,
-                                  bytesize=serial.EIGHTBITS,
-                                  parity=serial.PARITY_NONE,
-                                  stopbits=serial.STOPBITS_ONE,
-                                  timeout=2, xonxoff=0, rtscts=0)
-
-        self.active = self.sensors.isOpen()
+            self.sensors = serial.Serial(self.port, baudrate=self.baudrate,
+                                    bytesize=serial.EIGHTBITS,
+                                    parity=serial.PARITY_NONE,
+                                    stopbits=serial.STOPBITS_ONE,
+                                    timeout=2, xonxoff=0, rtscts=0)
+            self.active = self.sensors.isOpen()
         self.time_ar = []
         self.temp_yar = []
         self.humidity_yar = []

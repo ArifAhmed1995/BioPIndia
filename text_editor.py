@@ -547,13 +547,16 @@ class TextEditor(QMainWindow):
 
     def execute_script(self):
         #extruder_port = -1
-        self.sensors_serial.close()
+        if self.sensors_serial is not None:
+            self.sensors_serial.close()
+        if self.extruder_port is not None:
+            gp = GCodeParser(self.extruder_port)
+            gp.parseGCode(self.editor.document().toPlainText())
 
-        gp = GCodeParser(self.extruder_port)
-        gp.parseGCode(self.editor.document().toPlainText())
-
-        self.sensors_serial.open()
-        # Once GCode parsing is done, open sensors again
+            self.sensors_serial.open()
+            # Once GCode parsing is done, open sensors again
+        else:
+            QMessageBox().critical(self, "Extruder Access Error", "Extruder Arduino malfunction or not attached", QMessageBox.Ok)
 
 def stylesheet2(self):
     return """

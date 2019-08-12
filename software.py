@@ -42,31 +42,36 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         # with the activation key file.
         self.pm = PortMethods()
 
-        # Live Plot for sensors
-        self.sensors_plot_widget = SensorsMatplotlibQWidget(self.pm.get_sensors_port())
-        self.addSensorsMatplotlibQWidget(self.sensors_plot_widget)
+        sensors_port = self.pm.get_sensors_port()
+        if sensors_port is not None:
+            # Live Plot for sensors
+            self.sensors_plot_widget = SensorsMatplotlibQWidget(self.pm.get_sensors_port())
+            self.addSensorsMatplotlibQWidget(self.sensors_plot_widget)
 
-        # LCD update functions
-        palette_humidity_1 = self.humidity_1_lcd.palette()
-        palette_humidity_2 = self.humidity_2_lcd.palette()
-        palette_temp_1 = self.temp_1_lcd.palette()
-        palette_temp_2 = self.temp_2_lcd.palette()
-        palette_smoke_conc = self.smoke_conc_lcd.palette()
+            # LCD update functions
+            palette_humidity_1 = self.humidity_1_lcd.palette()
+            palette_humidity_2 = self.humidity_2_lcd.palette()
+            palette_temp_1 = self.temp_1_lcd.palette()
+            palette_temp_2 = self.temp_2_lcd.palette()
+            palette_smoke_conc = self.smoke_conc_lcd.palette()
 
-        palette_humidity_1.setColor(palette_humidity_1.Light, QtGui.QColor(0, 95, 255))
-        palette_humidity_2.setColor(palette_humidity_2.Light, QtGui.QColor(0, 95, 255))
-        palette_temp_1.setColor(palette_temp_1.Light, QtGui.QColor(93, 95, 25))
-        palette_temp_2.setColor(palette_temp_2.Light, QtGui.QColor(93, 95, 25))
-        palette_smoke_conc.setColor(palette_smoke_conc.Light, QtGui.QColor(3, 195, 125))
+            palette_humidity_1.setColor(palette_humidity_1.Light, QtGui.QColor(0, 95, 255))
+            palette_humidity_2.setColor(palette_humidity_2.Light, QtGui.QColor(0, 95, 255))
+            palette_temp_1.setColor(palette_temp_1.Light, QtGui.QColor(93, 95, 25))
+            palette_temp_2.setColor(palette_temp_2.Light, QtGui.QColor(93, 95, 25))
+            palette_smoke_conc.setColor(palette_smoke_conc.Light, QtGui.QColor(3, 195, 125))
 
-        self.humidity_1_lcd.setPalette(palette_humidity_1)
-        self.humidity_2_lcd.setPalette(palette_humidity_2)
-        self.temp_1_lcd.setPalette(palette_temp_1)
-        self.temp_2_lcd.setPalette(palette_temp_2)
-        self.smoke_conc_lcd.setPalette(palette_smoke_conc)
+            self.humidity_1_lcd.setPalette(palette_humidity_1)
+            self.humidity_2_lcd.setPalette(palette_humidity_2)
+            self.temp_1_lcd.setPalette(palette_temp_1)
+            self.temp_2_lcd.setPalette(palette_temp_2)
+            self.smoke_conc_lcd.setPalette(palette_smoke_conc)
 
-        # Self start timer
-        self.lcd_thread = LCDTimer(1 , self.update_sensor_lcds)
+            # Self start timer
+            self.lcd_thread = LCDTimer(1 , self.update_sensor_lcds)
+        else:
+            self.sensors_plot_widget = None
+            self.lcd_thread = None
 
         # Webcam Widget Integration
         self.webcam_widget = WebcamQWidget()
@@ -128,7 +133,10 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
     def open_gcode_editor(self):
         if self.gcode_file is None:
             self.gcode_file = self.current_dir + "/output.gcode"
-        self.gcode_edit_text_box = GCodeTextBox(self.gcode_file, self.pm, self.sensors_plot_widget.sensors.sensors)
+
+        sensors = None if self.sensors_plot_widget is None else self.sensors_plot_widget.sensors.sensors
+
+        self.gcode_edit_text_box = GCodeTextBox(self.gcode_file, self.pm, sensors)
         self.gcode_edit_text_box.show()
 
     def open_cad_editor(self):
@@ -140,8 +148,9 @@ class BioPIndiaApp(QtWidgets.QMainWindow, Ui_BioPIndia):
         self.addDHT11MatplotlibQWidget(self.dht11_plot_widget)
 
     def exit(self):
-        self.lcd_thread.terminate()
-        self.sensors_plot_widget.stop()
+        if self.sensors_plot_widget is not None:
+            self.lcd_thread.terminate()
+            self.sensors_plot_widget.stop()
         quit(0)
 
 if __name__ == '__main__':

@@ -33,7 +33,6 @@ class PortMethods:
 
         keyfile.close()
 
-
         if self.sensors_key == "" or self.extruder_key == "":
             print("Activation key not found !")
             print("Let's set up the printer.")
