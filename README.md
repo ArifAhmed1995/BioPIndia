@@ -23,3 +23,7 @@ Has been tested on UNIX environment only.
  - Handlers for various GCode commands(G1 implemented, not tested yet).
  - Correcting CAD tool. Integrated into BioApp, but the tool itself has major issues.
  - Code cleanup. Fit PEP8 standards, better encapsulation where possible.
+
+#### Future
+
+BioP India unfortunately disbanded due to a multitude of reasons. This software is now defunct.
